@@ -26,6 +26,10 @@ export const DELETE = async (
       return new NextResponse("resume not found", { status: 404 });
     }
 
+    if (resume.userProfileId !== userId) {
+      return new NextResponse("Unauthorized", { status: 403 });
+    }
+
     // delete from the firebase storage
     const storageRef = ref(storage, resume.url);
     await deleteObject(storageRef);
