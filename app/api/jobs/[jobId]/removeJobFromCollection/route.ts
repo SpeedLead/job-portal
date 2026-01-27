@@ -21,7 +21,6 @@ export const PATCH = async (
     const job = await db.job.findUnique({
       where: {
         id: jobId,
-        userId,
       },
     });
 
@@ -36,7 +35,6 @@ export const PATCH = async (
       updatedJob = await db.job.update({
         where: {
           id: jobId,
-          userId,
         },
         data: {
           savedUsers: {
