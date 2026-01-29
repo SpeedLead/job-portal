@@ -9,10 +9,9 @@ import {
 } from "firebase/storage";
 import { File, FilePlus, ImagePlus, Trash, X } from "lucide-react";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { Button } from "./ui/button";
-import { url } from "inspector";
 
 interface AttachmentsUploadsProps {
   disabled?: boolean;
@@ -28,6 +27,8 @@ export const AttachmentsUploads = ({
   const [isMounted, setIsMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [progress, setProgress] = useState<number>(0);
+  const valueRef = useRef(value);
+  valueRef.current = value;
 
   useEffect(() => {
     setIsMounted(true);
@@ -49,9 +50,14 @@ export const AttachmentsUploads = ({
 
     let completedFiles = 0;
 
+    const fileProgressMap = new Map<string, number>();
+
     files.forEach((file: File) => {
+      const fileKey = `${Date.now()}-${file.name}`;
+      fileProgressMap.set(fileKey, 0);
+
       const uploadTask = uploadBytesResumable(
-        ref(storage, `Attachments/${Date.now()}-${file.name}`),
+        ref(storage, `Attachments/${fileKey}`),
         file,
         { contentType: file.type }
       );
@@ -59,24 +65,25 @@ export const AttachmentsUploads = ({
       uploadTask.on(
         "state_changed",
         (snapshot) => {
-          setProgress((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+          fileProgressMap.set(
+            fileKey,
+            (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+          );
+          const values = Array.from(fileProgressMap.values());
+          const avg = values.reduce((a, b) => a + b, 0) / values.length;
+          setProgress(avg);
         },
         (error) => {
           toast.error(error.message);
         },
         () => {
           getDownloadURL(uploadTask.snapshot.ref).then((downloadurl) => {
-            // store this url
             newUrls.push({ url: downloadurl, name: file.name });
-
-            // increase the count of the counter
             completedFiles++;
 
-            // check the files are uploaded or not
             if (completedFiles === files.length) {
               setIsLoading(false);
-
-              onChange([...value, ...newUrls]);
+              onChange([...valueRef.current, ...newUrls]);
             }
           });
         }
