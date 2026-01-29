@@ -53,28 +53,26 @@ const JobApplicantsPage = async ({ params }: { params: { jobId: string } }) => {
     );
 
   const formattedProfiles: ApplicantColumns[] = filteredProfiles.map(
-    (profile) => ({
-      id: profile.userId,
-      fullname: profile.fullName ? profile.fullName : "",
-      email: profile.email ? profile.email : "",
-      contact: profile.contact ? profile.contact : "",
-      appliedAt: profile.appliedJobs.find((job) => job.jobId === params.jobId)
-        ?.appliedAt
-        ? format(
-            new Date(
-              profile.appliedJobs.find((job) => job.jobId === params.jobId)
-                ?.appliedAt ?? ""
-            ),
-            "MMMM do, yyyy"
-          )
-        : "",
-      resume:
-        profile.resumes.find((res) => res.id === profile.activeResumeId)?.url ??
-        "",
-      resumeName:
-        profile.resumes.find((res) => res.id === profile.activeResumeId)
-          ?.name ?? "",
-    })
+    (profile) => {
+      const appliedJob = profile.appliedJobs.find(
+        (job) => job.jobId === params.jobId
+      );
+      const activeResume = profile.resumes.find(
+        (res) => res.id === profile.activeResumeId
+      );
+
+      return {
+        id: profile.userId,
+        fullname: profile.fullName ? profile.fullName : "",
+        email: profile.email ? profile.email : "",
+        contact: profile.contact ? profile.contact : "",
+        appliedAt: appliedJob?.appliedAt
+          ? format(new Date(appliedJob.appliedAt), "MMMM do, yyyy")
+          : "",
+        resume: activeResume?.url ?? "",
+        resumeName: activeResume?.name ?? "",
+      };
+    }
   );
 
   return (
