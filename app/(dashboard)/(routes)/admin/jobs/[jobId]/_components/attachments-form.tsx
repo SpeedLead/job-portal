@@ -39,20 +39,10 @@ export const AttachmentsForm = ({
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const router = useRouter();
 
-  // Assuming initialData is available and has type of any
-  const initialAttachments = Array.isArray(initialData?.attachments)
-    ? initialData.attachments.map((attachment: any) => {
-        if (
-          typeof attachment === "object" &&
-          attachment !== null &&
-          "url" in attachment &&
-          "name" in attachment
-        ) {
-          return { url: attachment.url, name: attachment.name };
-        }
-        return { url: "", name: "" }; // Provide default values if the shape is incorrect
-      })
-    : [];
+  const initialAttachments = initialData.attachments.map((attachment) => ({
+    url: attachment.url,
+    name: attachment.name,
+  }));
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
