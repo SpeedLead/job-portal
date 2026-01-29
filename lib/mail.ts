@@ -1,8 +1,6 @@
 import nodemailer from "nodemailer";
 import SMTPTransport from 'nodemailer/lib/smtp-transport';
 import handlebars from "handlebars";
-import toast from "react-hot-toast";
-import { text } from "stream/consumers";
 import { ThankYouTemplate } from "./designs/thank-you";
 import { SendSelectedTempalte } from "./designs/send-selected-tempalte";
 import { SendRejectionTemplate } from "./designs/send-rejection-template";
@@ -22,7 +20,7 @@ export const sendMail = async ({
 
   const transport = nodemailer.createTransport({
     host: SMTP_HOST,
-    port: SMTP_PORT,
+    port: parseInt(SMTP_PORT || "587"),
     secure: false,
     auth: {
       user: SMTP_USER,
@@ -31,12 +29,10 @@ export const sendMail = async ({
   } as SMTPTransport.Options);
 
   try {
-    const textResult = await transport.verify();
-    console.log(textResult);
+    await transport.verify();
   } catch (error) {
-    console.log(error);
-    toast.error((error as Error)?.message);
-    return;
+    console.error("[MAIL_VERIFY]", error);
+    throw new Error("Failed to connect to mail server");
   }
 
   try {
@@ -48,8 +44,8 @@ export const sendMail = async ({
     });
     return sendResult;
   } catch (error) {
-    console.log(error);
-    toast.error((error as Error)?.message);
+    console.error("[MAIL_SEND]", error);
+    throw new Error("Failed to send email");
   }
 };
 
