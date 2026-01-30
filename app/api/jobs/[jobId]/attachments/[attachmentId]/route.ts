@@ -17,7 +17,7 @@ export const DELETE = async (
     }
 
     if (!jobId) {
-      return new NextResponse("ID Is missing", { status: 401 });
+      return new NextResponse("ID Is missing", { status: 400 });
     }
 
     const attachment = await db.attachment.findUnique({

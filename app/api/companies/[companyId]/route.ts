@@ -17,7 +17,7 @@ export const PATCH = async (
     }
 
     if (!companyId) {
-      return new NextResponse("ID Is missing", { status: 401 });
+      return new NextResponse("ID Is missing", { status: 400 });
     }
 
     const company = await db.company.update({

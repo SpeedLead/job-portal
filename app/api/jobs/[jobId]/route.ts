@@ -20,7 +20,7 @@ export const PATCH = async (
     }
 
     if (!jobId) {
-      return new NextResponse("ID Is missing", { status: 401 });
+      return new NextResponse("ID Is missing", { status: 400 });
     }
 
     const job = await db.job.update({
@@ -55,7 +55,7 @@ export const DELETE = async (
     }
 
     if (!jobId) {
-      return new NextResponse("ID Is missing", { status: 401 });
+      return new NextResponse("ID Is missing", { status: 400 });
     }
 
     const job = await db.job.findUnique({

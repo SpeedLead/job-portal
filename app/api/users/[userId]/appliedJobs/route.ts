@@ -13,7 +13,7 @@ export const PATCH = async (req: Request) => {
     }
 
     if (!jobId) {
-      return new NextResponse("Job id is missing", { status: 401 });
+      return new NextResponse("Job id is missing", { status: 400 });
     }
 
     let profile = await db.userProfile.findUnique({
@@ -23,7 +23,7 @@ export const PATCH = async (req: Request) => {
     });
 
     if (!profile) {
-      return new NextResponse("User Profile Not found", { status: 401 });
+      return new NextResponse("User Profile Not found", { status: 404 });
     }
 
     const updatedProfile = await db.userProfile.update({

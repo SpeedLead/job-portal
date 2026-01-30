@@ -15,7 +15,7 @@ export const PATCH = async (
     }
 
     if (!companyId) {
-      return new NextResponse("ID Is missing", { status: 401 });
+      return new NextResponse("ID Is missing", { status: 400 });
     }
 
     const company = await db.company.findUnique({
@@ -25,7 +25,7 @@ export const PATCH = async (
     });
 
     if (!company) {
-      return new NextResponse("Company Not Found", { status: 401 });
+      return new NextResponse("Company Not Found", { status: 404 });
     }
 
     // remove usserid from the followers
