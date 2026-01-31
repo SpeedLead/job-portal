@@ -29,20 +29,20 @@ export const PATCH = async (
     }
 
     const userIndex = (job.savedUsers ?? []).indexOf(userId);
-    let updatedJob;
-    if (userIndex !== -1) {
-      // update the job
-      updatedJob = await db.job.update({
-        where: {
-          id: jobId,
-        },
-        data: {
-          savedUsers: {
-            set: (job.savedUsers ?? []).filter((savedUserId) => savedUserId !== userId),
-          },
-        },
-      });
+    if (userIndex === -1) {
+      return NextResponse.json(job);
     }
+
+    const updatedJob = await db.job.update({
+      where: {
+        id: jobId,
+      },
+      data: {
+        savedUsers: {
+          set: (job.savedUsers ?? []).filter((savedUserId) => savedUserId !== userId),
+        },
+      },
+    });
 
     return NextResponse.json(updatedJob);
   } catch (error) {
