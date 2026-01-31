@@ -20,6 +20,14 @@ export const DELETE = async (
       return new NextResponse("ID Is missing", { status: 400 });
     }
 
+    const job = await db.job.findUnique({
+      where: { id: jobId },
+    });
+
+    if (!job || job.userId !== userId) {
+      return new NextResponse("Unauthorized", { status: 401 });
+    }
+
     const attachment = await db.attachment.findUnique({
       where: {
         id: attachmentId,
