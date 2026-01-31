@@ -28,7 +28,7 @@ export const PATCH = async (
       return new NextResponse("Job Not Found", { status: 404 });
     }
 
-    const userIndex = job.savedUsers.indexOf(userId);
+    const userIndex = (job.savedUsers ?? []).indexOf(userId);
     let updatedJob;
     if (userIndex !== -1) {
       // update the job
@@ -38,7 +38,7 @@ export const PATCH = async (
         },
         data: {
           savedUsers: {
-            set: job.savedUsers.filter((savedUserId) => savedUserId !== userId),
+            set: (job.savedUsers ?? []).filter((savedUserId) => savedUserId !== userId),
           },
         },
       });
